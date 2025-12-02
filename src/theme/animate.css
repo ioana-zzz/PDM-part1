@@ -1,0 +1,17 @@
+/* Animate some components (1p) */
+.saving-animation {
+  animation: pulse-spin 1s infinite alternate;
+}
+
+@keyframes pulse-spin {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    color: var(--ion-color-primary);
+  }
+  100% {
+    transform: scale(1.1) rotate(180deg);
+    opacity: 0.7;
+    color: var(--ion-color-secondary);
+  }
+}

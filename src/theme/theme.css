@@ -1,0 +1,161 @@
+:root {
+  /* --- Reverting to Original Pink Theme --- */
+  --ion-color-primary: #d946a6;
+  --ion-color-primary-rgb: 217, 70, 166;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #c1358f;
+  --ion-color-primary-tint: #dd5ab0;
+
+  --ion-color-secondary: #2dd4bf;
+  --ion-color-secondary-rgb: 45, 212, 191;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-shade: #28b8a8;
+  --ion-color-secondary-tint: #42d9c6;
+
+  --ion-color-tertiary: #84cc16;
+  --ion-color-tertiary-rgb: 132, 204, 22;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-shade: #76b614;
+  --ion-color-tertiary-tint: #90d632;
+
+  --ion-background-color: #faf9f7;
+  --ion-background-color-rgb: 250, 249, 247;
+
+  --ion-text-color: #2d2d2d;
+  --ion-text-color-rgb: 45, 45, 45;
+
+  --ion-border-color: #e5e3df;
+}
+
+/* --- Header & Toolbar --- */
+ion-header {
+  box-shadow: 0 2px 12px rgba(217, 70, 166, 0.1);
+}
+
+ion-toolbar {
+  --background: linear-gradient(135deg, #d946a6 0%, #a21caf 100%);
+  --color: #ffffff;
+}
+
+ion-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* --- Content & List --- */
+ion-content {
+  --background: #faf9f7;
+}
+
+ion-list {
+  --background: transparent;
+  padding: 16px 0;
+}
+
+/* 🎯 FIX CRITIC: FACE CARD-ul/ITEM-ul TRANSPARENT */
+ion-item {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --inner-padding-bottom: 12px;
+  --inner-padding-top: 12px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  
+  /* ⭐️ FIX: Setăm fundalul item-ului transparent pentru animație */
+  --background: transparent; 
+  --inner-border-width: 0; /* Elimină linia de separator implicită */
+  
+  border: none; /* Elimină bordura de pe item (lăsând-o pe div-ul animat) */
+  transition: all 0.3s ease;
+}
+
+ion-item:active,
+ion-item:hover {
+  /* Păstrăm efectul de hover, dar fără a strica animația de fundal */
+  --background: transparent; 
+  box-shadow: none;
+  transform: translateY(-2px);
+}
+
+/* --- Input Styling (Fixează aspectul din formular) --- */
+
+/* Fix Input Bleeding: Asigurăm fundal alb explicit */
+ion-content ion-input {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e3df;
+  background: #ffffff; /* Fundal alb pentru lizibilitate */
+  min-height: 56px;
+}
+
+/* FIX: Stilizează Label-ul */
+ion-content ion-input::part(label) {
+  color: #d946a6;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+/* FIX: Elimină regula agresivă care strica input-ul.
+   Dacă în HTML ai în continuare <ion-content><div>...</div></ion-content>,
+   va trebui să ștergi manual acel div care înconjoară input-urile.
+   Am inclus o regulă specifică pentru zona de erori.
+*/
+ion-page[class*="ItemEdit"] ion-content > div[style*="Failed"] {
+  background: #fecaca;
+  color: #991b1b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px;
+  border-left: 4px solid #dc2626;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+
+/* --- Label & Typography --- */
+ion-label h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #d946a6;
+  margin: 0 0 6px 0;
+}
+
+ion-label p {
+  font-size: 0.9rem;
+  color: #666666;
+  margin: 4px 0;
+}
+
+/* --- FAB Button (Keeping original styles) --- */
+ion-fab-button {
+  --background: linear-gradient(135deg, #d946a6 0%, #a21caf 100%);
+  --background-activated: #a21caf;
+  --color: #ffffff;
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 4px 16px rgba(217, 70, 166, 0.3);
+}
+
+/* --- Animations --- */
+ion-fab-button::after {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 16px rgba(217, 70, 166, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(217, 70, 166, 0.5);
+  }
+  100% {
+    box-shadow: 0 4px 16px rgba(217, 70, 166, 0.3);
+  }
+}
