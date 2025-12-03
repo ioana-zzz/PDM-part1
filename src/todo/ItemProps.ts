@@ -1,14 +1,12 @@
 export interface ItemProps {
   _id?: string;
   name: string;
-  no_petals: number;
-  scientific_name: string;
-  class: string;
-  has_photo: boolean;
-  date_added: string;
+  rating : number;
+  visit_again: boolean;
+  date_visited: string;
   
   tempId?: string;
-  _pendingSync?: boolean; // For items that failed to save text
+  _pendingSync?: boolean; 
   
   photoPath?: string; 
   latitude?: number;

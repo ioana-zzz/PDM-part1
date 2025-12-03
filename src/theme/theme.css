@@ -1,40 +1,42 @@
 :root {
-  /* --- Reverting to Original Pink Theme --- */
-  --ion-color-primary: #d946a6;
-  --ion-color-primary-rgb: 217, 70, 166;
+  /* --- Tropical Adventure Theme (Blues, Greens, and Warm Orange) --- */
+  --ion-color-primary: #06b6d4; /* Cyan/Sky Blue for action and main elements */
+  --ion-color-primary-rgb: 6, 182, 212;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #c1358f;
-  --ion-color-primary-tint: #dd5ab0;
+  --ion-color-primary-shade: #0891b2;
+  --ion-color-primary-tint: #22d3ee;
 
-  --ion-color-secondary: #2dd4bf;
-  --ion-color-secondary-rgb: 45, 212, 191;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-shade: #28b8a8;
-  --ion-color-secondary-tint: #42d9c6;
+  --ion-color-secondary: #10b981; /* Emerald Green for nature, success, and secondary actions */
+  --ion-color-secondary-rgb: 16, 185, 129;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #059669;
+  --ion-color-secondary-tint: #34d399;
 
-  --ion-color-tertiary: #84cc16;
-  --ion-color-tertiary-rgb: 132, 204, 22;
+  --ion-color-tertiary: #f97316; /* Orange/Warm tone for highlights, warnings, and attention */
+  --ion-color-tertiary-rgb: 249, 115, 22;
   --ion-color-tertiary-contrast: #ffffff;
-  --ion-color-tertiary-shade: #76b614;
-  --ion-color-tertiary-tint: #90d632;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #ea580c;
+  --ion-color-tertiary-tint: #fb923c;
 
-  --ion-background-color: #faf9f7;
-  --ion-background-color-rgb: 250, 249, 247;
+  --ion-background-color: #f7fee7; /* Very light, almost creamy background */
+  --ion-background-color-rgb: 247, 254, 231;
 
-  --ion-text-color: #2d2d2d;
-  --ion-text-color-rgb: 45, 45, 45;
+  --ion-text-color: #1f2937; /* Darker text for readability */
+  --ion-text-color-rgb: 31, 41, 55;
 
-  --ion-border-color: #e5e3df;
+  --ion-border-color: #e5e7eb; /* Light grey border */
 }
 
 /* --- Header & Toolbar --- */
 ion-header {
-  box-shadow: 0 2px 12px rgba(217, 70, 166, 0.1);
+  box-shadow: 0 2px 12px rgba(6, 182, 212, 0.1); /* Use new primary color for shadow */
 }
 
 ion-toolbar {
-  --background: linear-gradient(135deg, #d946a6 0%, #a21caf 100%);
+  --background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); /* New primary gradient */
   --color: #ffffff;
 }
 
@@ -46,7 +48,7 @@ ion-title {
 
 /* --- Content & List --- */
 ion-content {
-  --background: #faf9f7;
+  --background: var(--ion-background-color);
 }
 
 ion-list {
@@ -54,34 +56,30 @@ ion-list {
   padding: 16px 0;
 }
 
-/* 🎯 FIX CRITIC: FACE CARD-ul/ITEM-ul TRANSPARENT */
+/* Item Cards with Transparent Background for Animations */
 ion-item {
   --padding-start: 12px;
   --padding-end: 12px;
   --inner-padding-bottom: 12px;
   --inner-padding-top: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 10px; /* Slightly more space */
   border-radius: 12px;
   
-  /* ⭐️ FIX: Setăm fundalul item-ului transparent pentru animație */
   --background: transparent; 
-  --inner-border-width: 0; /* Elimină linia de separator implicită */
+  --inner-border-width: 0;
   
-  border: none; /* Elimină bordura de pe item (lăsând-o pe div-ul animat) */
+  border: none;
   transition: all 0.3s ease;
 }
 
 ion-item:active,
 ion-item:hover {
-  /* Păstrăm efectul de hover, dar fără a strica animația de fundal */
   --background: transparent; 
   box-shadow: none;
   transform: translateY(-2px);
 }
 
-/* --- Input Styling (Fixează aspectul din formular) --- */
-
-/* Fix Input Bleeding: Asigurăm fundal alb explicit */
+/* --- Input Styling --- */
 ion-content ion-input {
   --padding-start: 16px;
   --padding-end: 16px;
@@ -89,26 +87,37 @@ ion-content ion-input {
   --padding-bottom: 12px;
   margin: 12px 16px;
   border-radius: 12px;
-  border: 1px solid #e5e3df;
-  background: #ffffff; /* Fundal alb pentru lizibilitate */
+  border: 1px solid var(--ion-border-color);
+  background: #ffffff;
   min-height: 56px;
+  transition: border-color 0.3s ease;
 }
 
-/* FIX: Stilizează Label-ul */
+ion-content ion-input:focus-within {
+  border-color: var(--ion-color-primary);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+/* Input Label Styling */
 ion-content ion-input::part(label) {
-  color: #d946a6;
+  color: var(--ion-color-primary);
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 8px;
 }
 
-/* FIX: Elimină regula agresivă care strica input-ul.
-   Dacă în HTML ai în continuare <ion-content><div>...</div></ion-content>,
-   va trebui să ștergi manual acel div care înconjoară input-urile.
-   Am inclus o regulă specifică pentru zona de erori.
-*/
-ion-page[class*="ItemEdit"] ion-content > div[style*="Failed"] {
-  background: #fecaca;
+/* Toggle Styling */
+ion-toggle {
+  --background: #d1d5db;
+  --background-checked: var(--ion-color-secondary); /* Use green for toggle check */
+  --handle-background: #ffffff;
+  --handle-background-checked: #ffffff;
+}
+
+/* --- Error Messages --- */
+ion-content > div[style*="color: red"],
+ion-content > div[style*="Failed"] {
+  background: #fee2e2;
   color: #991b1b;
   padding: 12px 16px;
   border-radius: 8px;
@@ -118,44 +127,216 @@ ion-page[class*="ItemEdit"] ion-content > div[style*="Failed"] {
   font-size: 0.95rem;
 }
 
-
 /* --- Label & Typography --- */
 ion-label h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #d946a6;
+  color: var(--ion-text-color); /* Use general text color for better integration */
   margin: 0 0 6px 0;
 }
 
 ion-label p {
   font-size: 0.9rem;
-  color: #666666;
+  color: #6b7280; /* Neutral grey */
   margin: 4px 0;
 }
 
-/* --- FAB Button (Keeping original styles) --- */
+/* Rating Stars Styling */
+ion-label .rating-stars {
+  color: var(--ion-color-tertiary); /* Use warm tertiary color for stars */
+  font-size: 1rem;
+}
+
+/* --- Buttons --- */
+ion-button {
+  --border-radius: 10px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.3px;
+}
+
+ion-button[fill="outline"] {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+}
+
+ion-button[fill="outline"]:hover {
+  --background: rgba(6, 182, 212, 0.05);
+}
+
+/* --- FAB Button --- */
 ion-fab-button {
-  --background: linear-gradient(135deg, #d946a6 0%, #a21caf 100%);
-  --background-activated: #a21caf;
+  --background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); /* Use a warm, energetic orange/tertiary gradient */
+  --background-activated: #ea580c;
   --color: #ffffff;
   width: 56px;
   height: 56px;
-  box-shadow: 0 4px 16px rgba(217, 70, 166, 0.3);
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3);
 }
 
-/* --- Animations --- */
+ion-fab-button:hover {
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+}
+
+/* --- Badges --- */
+ion-badge {
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* --- Chips --- */
+ion-chip {
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* --- Select/Searchbar --- */
+ion-searchbar {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 8px 16px;
+}
+
+ion-select {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin: 0 16px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid var(--ion-border-color);
+}
+
+/* --- Loading Spinner --- */
+ion-loading {
+  --background: rgba(255, 255, 255, 0.95);
+  --spinner-color: var(--ion-color-primary);
+}
+
+/* --- Modal --- */
+ion-modal {
+  --border-radius: 16px;
+  --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Scenic Background Class --- */
+
+/** * Use this class on ion-content for a main screen 
+ * to subtly evoke a bright, tropical, or seaside feeling 
+ */
+.scenic-background {
+  --background: url('https://files.ekmcdn.com/allwallpapers/images/tropical-scenery-ocean-photomural-wallpaper-(2)-32175-p.jpg?v=599d4741-9423-4652-b292-e55e0354b409') no-repeat center center / cover; /* Placeholder image */
+  position: relative;
+}
+
+.scenic-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Use a subtle gradient overlay to match the theme and ensure readability */
+  background: linear-gradient(
+    to top, 
+    rgba(247, 254, 231, 0.9) 0%, /* Match background color at the bottom */
+    rgba(6, 182, 212, 0.1) 100% /* Fade to a light primary tint at the top */
+  );
+  pointer-events: none; /* Allows clicks to pass through to the content */
+  z-index: 1; /* Place above the image but below the content */
+}
+
+/* Make sure the content sits above the overlay */
+.scenic-background ion-list {
+  position: relative;
+  z-index: 2; 
+}
+
+
+/* --- Animations (Adjusted to tertiary color) --- */
 ion-fab-button::after {
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 4px 16px rgba(217, 70, 166, 0.3);
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3);
   }
   50% {
-    box-shadow: 0 4px 24px rgba(217, 70, 166, 0.5);
+    box-shadow: 0 4px 24px rgba(249, 115, 22, 0.5);
   }
   100% {
-    box-shadow: 0 4px 16px rgba(217, 70, 166, 0.3);
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.3);
+  }
+}
+
+/* Fade-in animation for items */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+ion-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* --- Saving Animation --- */
+.saving-animation {
+  animation: saving-pulse 1s infinite;
+}
+
+@keyframes saving-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* --- Dark Mode Support (Optional) --- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #111827; /* Darker navy/slate */
+    --ion-background-color-rgb: 17, 24, 39;
+    
+    --ion-text-color: #f3f4f6;
+    --ion-text-color-rgb: 243, 244, 246;
+    
+    --ion-border-color: #374151;
+  }
+  
+  ion-content ion-input {
+    background: #1f2937;
+    border-color: #374151;
+    color: var(--ion-text-color);
+  }
+  
+  ion-select {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  ion-searchbar {
+    --background: #1f2937;
+  }
+  
+  ion-label p {
+    color: #9ca3af;
+  }
+
+  .scenic-background::before {
+    background: linear-gradient(
+      to top, 
+      rgba(17, 24, 39, 0.9) 0%, /* Match dark background at the bottom */
+      rgba(6, 182, 212, 0.1) 100%
+    );
   }
 }

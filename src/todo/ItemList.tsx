@@ -6,7 +6,7 @@ import {
     IonBadge, IonChip, IonLabel, IonButton, IonButtons, IonInfiniteScroll,
     IonInfiniteScrollContent, IonModal, isPlatform
 } from '@ionic/react';
-import { add, logOutOutline, wifiOutline, cloudOfflineOutline, locate, close } from 'ionicons/icons';
+import { add, logOutOutline, wifiOutline, cloudOfflineOutline, locate, close, star, helpCircleOutline } from 'ionicons/icons';
 import { ItemContext } from './ItemProvider';
 import { AuthContext } from '../auth/AuthProvider';
 import Item from './Item';
@@ -38,8 +38,6 @@ const customEnterAnimation = (baseEl: any): Animation => {
     .duration(300)
     .addAnimation([backdrop, wrapper]);
 };
-
-const NetworkContext = React.createContext<{ isOnline: boolean }>({ isOnline: true });
 
 const useNetworkStatus = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -73,7 +71,12 @@ const ItemMapViewer: React.FC<{ lat: number; lon: number }> = ({ lat, lon }) => 
 };
 
 const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
-    const { items, fetching, fetchingError, hasMore, loadMore, searchText, setSearchText, filterClass, setFilterClass } = useContext(ItemContext);
+    const { 
+        items, fetching, fetchingError, hasMore, loadMore, 
+        searchText, setSearchText, filterRating, setFilterRating,
+        filterVisitAgain, setFilterVisitAgain 
+    } = useContext(ItemContext);
+
     const isOnline = useNetworkStatus(); 
     const { logout } = useContext(AuthContext);
     const contentRef = useRef<HTMLIonContentElement>(null);
@@ -86,23 +89,41 @@ const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
         if (lat && lon && !isNaN(lat) && !isNaN(lon)) setMapLocation({ lat, lon });
     };
 
-    const uniqueClasses = Array.from(new Set(items?.map(i => i.class) || []));
     const getPendingMessage = (item: Partial<ItemProps>) => {
         if (item._pendingSync || (item.tempId && !item._id)) return "Item Sync Pending";
         if (item._photoPendingSync) return "Photo Sync Pending";
         return null;
     };
 
+    const renderStars = (rating: number) => {
+        const stars = [];
+        for (let i = 0; i < 5; i++) {
+            stars.push(
+                <IonIcon 
+                    key={i} 
+                    icon={star} 
+                    style={{ fontSize: '1.2rem', marginRight: '2px' }}
+                    color={i < rating ? 'tertiary' : 'medium'} 
+                />
+            );
+        }
+        return <div style={{ display: 'flex' }}>{stars}</div>;
+    };
+
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Flowers</IonTitle>
+                    <IonTitle>Where I've traveled ✈️</IonTitle>
+                   
                     <IonButtons slot="end">
                         <IonChip color={isOnline ? 'success' : 'danger'}>
                             <IonIcon icon={isOnline ? wifiOutline : cloudOfflineOutline} />
                             <IonLabel>{isOnline ? 'Online' : 'Offline'}</IonLabel>
                         </IonChip>
+                     <IonButton onClick={() => history.push('/guide')}>
+                    <IonIcon icon={helpCircleOutline} />
+                    </IonButton>
                         <IonButton onClick={handleLogout}><IonIcon slot="icon-only" icon={logOutOutline} /></IonButton>
                     </IonButtons>
                 </IonToolbar>
@@ -110,16 +131,40 @@ const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
                     <IonSearchbar value={searchText} onIonInput={e => setSearchText?.(e.detail.value || '')} placeholder="Search by name" debounce={300} />
                 </IonToolbar>
                 <IonToolbar>
-                    <IonSelect value={filterClass} placeholder="Filter by class" onIonChange={e => setFilterClass?.(e.detail.value || '')} interface="popover">
-                        <IonSelectOption value="">All Classes</IonSelectOption>
-                        {uniqueClasses.map(cls => <IonSelectOption key={cls} value={cls}>{cls}</IonSelectOption>)}
-                    </IonSelect>
+                    <div style={{ display: 'flex', padding: '0 10px' }}>
+                        <IonSelect 
+                            value={filterRating} 
+                            placeholder="Rating" 
+                            onIonChange={e => setFilterRating?.(e.detail.value)} 
+                            interface="popover"
+                            style={{ width: '50%' }}
+                        >
+                            <IonSelectOption value={undefined}>All Ratings</IonSelectOption>
+                            <IonSelectOption value={5}>5 Stars</IonSelectOption>
+                            <IonSelectOption value={4}>4 Stars</IonSelectOption>
+                            <IonSelectOption value={3}>3 Stars</IonSelectOption>
+                            <IonSelectOption value={2}>2 Stars</IonSelectOption>
+                            <IonSelectOption value={1}>1 Star</IonSelectOption>
+                        </IonSelect>
+                        
+                        <IonSelect 
+                            value={filterVisitAgain} 
+                            placeholder="Visit?" 
+                            onIonChange={e => setFilterVisitAgain?.(e.detail.value)} 
+                            interface="popover"
+                            style={{ width: '50%' }}
+                        >
+                            <IonSelectOption value="all">Show All</IonSelectOption>
+                            <IonSelectOption value="yes">Visit Again</IonSelectOption>
+                            <IonSelectOption value="no">One Time</IonSelectOption>
+                        </IonSelect>
+                    </div>
                 </IonToolbar>
             </IonHeader>
 
-            <IonContent ref={contentRef}>
+            <IonContent ref={contentRef} className = 'scenic-background'>
                 <IonLoading isOpen={fetching} message="Fetching items..."
-                     enterAnimation={customEnterAnimation} leaveAnimation={customEnterAnimation} />
+                      enterAnimation={customEnterAnimation} leaveAnimation={customEnterAnimation} />
                 {items && (
                     <IonList>
                         {items.map(item => {
@@ -128,7 +173,14 @@ const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
                                 <div key={item._id || item.tempId} style={{ position: 'relative' }}>
                                     {pendingMessage && <IonBadge color="warning" style={{ position: 'absolute', top: 8, right: 8, zIndex: 10, fontSize: '0.7rem', padding: '4px 8px' }}>{pendingMessage}</IonBadge>}
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <div style={{ flexGrow: 1 }}><Item {...item} onEdit={id => history.push(`/item/${id || item.tempId}`)} /></div>
+                                        <div style={{ flexGrow: 1 }}>
+                                            <Item {...item} onEdit={id => history.push(`/item/${id || item.tempId}`)} />
+                                            {/* Rating and Visit Again Status Display */}
+                                            <div style={{ padding: '0 16px 8px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                {renderStars(item.rating)}
+                                                {item.visit_again && <IonChip color="secondary" style={{ height: '20px', fontSize: '0.7rem' }}>Visit Again</IonChip>}
+                                            </div>
+                                        </div>
                                         {item.latitude !== undefined && item.longitude !== undefined && (
                                             <IonButton fill="clear" onClick={e => handleLocateResource(e, item.latitude!, item.longitude!)} style={{ marginInlineEnd: 10 }} title="View on Map">
                                                 <IonIcon icon={locate} slot="icon-only" color="secondary" />
@@ -147,7 +199,7 @@ const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
 
                 {fetchingError && <div className="ion-padding" style={{ color: 'red', textAlign: 'center' }}>{fetchingError.message || 'Failed to fetch items'}</div>}
                 {!hasMore && !fetching && items && items.length > 0 && <div style={{ textAlign: 'center', padding: 20, color: '#666' }}>No more items</div>}
-                {!fetching && (!items || items.length === 0) && <div style={{ textAlign: 'center', padding: 40, color: '#666' }}>No items found. Add your first flower!</div>}
+                {!fetching && (!items || items.length === 0) && <div style={{ textAlign: 'center', padding: 40, color: '#666' }}>No items found. Add your first item!</div>}
 
                 <IonFab vertical="bottom" horizontal="end" slot="fixed">
                     <IonFabButton onClick={() => history.push('/item')}><IonIcon icon={add} /></IonFabButton>

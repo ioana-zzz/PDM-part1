@@ -28,6 +28,7 @@ import { ItemProvider } from './todo/ItemProvider';
 import ItemList from './todo/ItemList';
 import ItemEdit from './todo/ItemEdit';
 import {Login} from './auth/Login';
+import UserGuide from './guide/UserGuide';
 
 setupIonicReact();
 
@@ -61,6 +62,7 @@ const AppContent: React.FC = () => {
             if (!isAuthenticated) return <Redirect to="/login" />;
             return <ItemList {...props} />;
           }} />
+          <Route path="/guide" component={UserGuide} exact={true} />
         </IonRouterOutlet>
       </ItemProvider>
     </IonReactRouter>

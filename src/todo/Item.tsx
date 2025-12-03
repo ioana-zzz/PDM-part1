@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { 
   IonItem, 
   IonLabel, 
@@ -7,7 +7,7 @@ import {
   createAnimation 
 } from '@ionic/react';
 import type { Animation } from '@ionic/core';
-import { flowerOutline, imagesOutline } from 'ionicons/icons';
+import { imageOutline, mapOutline } from 'ionicons/icons';
 import { ItemProps } from './ItemProps';
 import { getLogger } from '../core';
 import { baseUrl } from '../core'; 
@@ -21,12 +21,8 @@ interface ItemPropsWithEdit extends ItemProps {
 const Item: React.FC<ItemPropsWithEdit> = ({
   _id,
   name,
-  no_petals,
-  scientific_name,
-  class: flowerClass,
-  has_photo,
   photoPath,
-  date_added,
+  date_visited,
   onEdit,
   tempId,
   _pendingSync,
@@ -52,76 +48,76 @@ const Item: React.FC<ItemPropsWithEdit> = ({
   };
 
   const imageUrl = getImageUrl();
-  log('render', name, 'photoPath:', photoPath, 'imageUrl:', imageUrl);
+  
+  // Format Date for readability
+  const displayDate = useMemo(() => {
+    if (!date_visited) return '';
+    return new Date(date_visited).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }, [date_visited]);
 
+  // Setup Animation Effect
   useEffect(() => {
     if (itemRef.current) {
       const element = itemRef.current;
       
+      // Updated colors to match "Tropical Theme" (Green to Orange pulsing)
       const animation = createAnimation()
         .addElement(element)
-        .duration(800)
+        .duration(2000) // Smooth 2s transition
         .iterations(Infinity)
-        .direction('alternate')
+        .direction('alternate') // Flows back and forth for softness
         .keyframes([
-          { offset: 0, backgroundColor: '#ffffff' },
-          { offset: 0.5, backgroundColor: '#dd5ab0' },
-          { offset: 1, backgroundColor: '#42d9c6' }
+          // Offset 0: Aqua / Cyan (Tropical Water)
+          { offset: 0, '--background': '#67e8f9' }, 
+          // Offset 0.5: Sunny Yellow (Mid-day Sun)
+          { offset: 0.5, '--background': '#fde047' }, 
+          // Offset 1: Warm Orange (Sunset)
+          { offset: 1, '--background': '#fb923c' } 
         ]);
 
       animationRef.current = animation;
 
-      const onMouseEnter = () => {
-        if (!_pendingSync && !_photoPendingSync) {
-          log('Playing animation on hover');
-          element.classList.add('animating');
-          animation.play();
-        }
-      };
-
-      const onMouseLeave = () => {
-        if (!_pendingSync && !_photoPendingSync) {
-          log('Stopping animation on leave');
-          animation.stop();
-          element.classList.remove('animating');
-          element.style.backgroundColor = '';
-        }
-      };
-
-      element.addEventListener('mouseenter', onMouseEnter);
-      element.addEventListener('mouseleave', onMouseLeave);
-
       return () => {
-        element.removeEventListener('mouseenter', onMouseEnter);
-        element.removeEventListener('mouseleave', onMouseLeave);
         animation.destroy();
       };
     }
-  }, [_pendingSync, _photoPendingSync]);
+  }, []);
 
+  // Handle "Pending Sync" Animation State
   useEffect(() => {
-    const isPending = _pendingSync === true || _photoPendingSync === true;
+    const isPending = _pendingSync || _photoPendingSync;
 
-    if (animationRef.current && isPending) {
-      animationRef.current.play();
-    } else if (animationRef.current && !isPending) {
-      animationRef.current.stop();
+    if (animationRef.current) {
+      if (isPending) {
+        // If pending, force play the animation to indicate unsaved status
+        animationRef.current.play();
+      } else {
+        // If not pending, stop (unless hovering, which is handled by mouse events)
+        animationRef.current.stop();
+        if (itemRef.current) {
+            itemRef.current.style.setProperty('--background', 'transparent');
+        }
+      }
     }
   }, [_pendingSync, _photoPendingSync]);
 
   const handleMouseEnter = () => {
+    // Only play hover animation if NOT pending (pending has priority)
     if (!_pendingSync && !_photoPendingSync && animationRef.current) {
-      log('Playing animation on hover');
       animationRef.current.play();
     }
   };
 
   const handleMouseLeave = () => {
+    // Only stop hover animation if NOT pending
     if (!_pendingSync && !_photoPendingSync && animationRef.current) {
-      log('Stopping animation on leave');
       animationRef.current.stop();
       if (itemRef.current) {
-        itemRef.current.style.background = '';
+        itemRef.current.style.setProperty('--background', 'transparent');
       }
     }
   };
@@ -131,8 +127,11 @@ const Item: React.FC<ItemPropsWithEdit> = ({
       ref={itemRef} 
       onClick={handleEdit} 
       button={true}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{
-        background: 'transparent'
+        '--background': 'transparent', // Important for the scenic background to show through
+        '--border-color': 'rgba(0,0,0,0.05)'
       }}
     >
       <IonThumbnail slot="start">
@@ -140,19 +139,20 @@ const Item: React.FC<ItemPropsWithEdit> = ({
           <img 
             src={imageUrl} 
             alt={name} 
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: 'cover', borderRadius: '8px' }}
             onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/150?text=No+Image')}
           />
-        ) : has_photo ? (
-          <IonIcon icon={imagesOutline} style={{ fontSize: '40px' }} color="medium" />
         ) : (
-          <IonIcon icon={flowerOutline} style={{ fontSize: '40px' }} color="medium" />
+          
+          <IonIcon icon={imageOutline} style={{ fontSize: '32px', width: '100%', height: '100%' }} color="medium" />
         )}
       </IonThumbnail>
+      
       <IonLabel>
-        <h2>{name}</h2>
-        <p>Scientific Name: {scientific_name}</p>
-        <p>Class: {flowerClass} | Petals: {no_petals}</p>
+        <h2 style={{ fontWeight: 'bold' }}>{name}</h2>
+        <p style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+             {displayDate && `Visited: ${displayDate}`}
+        </p>
       </IonLabel>
     </IonItem>
   );

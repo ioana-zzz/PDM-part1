@@ -56,22 +56,21 @@ export const Login: React.FC<RouteComponentProps> = ({ history }) => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle>Login</IonTitle>
+          <IonTitle>CTheWorld++</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">
+      <IonContent className="scenic-background">
         <div style={{ 
           maxWidth: '400px', 
           margin: '40px auto',
           padding: '20px',
-          backgroundColor: 'var(--ion-background-color, white)'
         }}>
           <h2 style={{ textAlign: 'center', color: 'var(--ion-text-color, black)' }}>
             Welcome
           </h2>
           
           <IonItem>
-            <IonLabel position="stacked" color="primary">Username</IonLabel>
+            <IonLabel position="stacked" color="primary"> Username</IonLabel>
             <IonInput
               value={username}
               onIonChange={handleUsernameChange}
@@ -80,7 +79,7 @@ export const Login: React.FC<RouteComponentProps> = ({ history }) => {
           </IonItem>
           
           <IonItem style={{ marginTop: '10px' }}>
-            <IonLabel position="stacked" color="primary">Password</IonLabel>
+            <IonLabel position="stacked" color="primary"> Password</IonLabel>
             <IonInput
               type="password"
               value={password}
