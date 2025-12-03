@@ -170,7 +170,21 @@ const reducer = (state: ItemsState, { type, payload }: ActionProps): ItemsState 
       if (savedItem._id && !originalTempId) {
           const index = items.findIndex(it => it._id === savedItem._id);
           if (index !== -1) {
+              // Update existing item in place
               items[index] = { ...items[index], ...savedItem, _pendingSync: false };
+          } else {
+              // Item doesn't exist yet (e.g., from WebSocket in another tab)
+              // Check if there's a duplicate by content before adding
+              const isDuplicate = items.some(it => 
+                it._id === savedItem._id || 
+                (it.name === savedItem.name && 
+                 it.rating === savedItem.rating && 
+                 it.location === savedItem.location &&
+                 it.price === savedItem.price)
+              );
+              if (!isDuplicate) {
+                  items.unshift({ ...savedItem, _pendingSync: false });
+              }
           }
       } 
       // SCENARIO 2: We created a NEW item (had tempId, now has _id)
@@ -181,12 +195,21 @@ const reducer = (state: ItemsState, { type, payload }: ActionProps): ItemsState 
               items.splice(indexTemp, 1);
           }
           
-          // Ensure the new item is clean
-          const newItem = { ...savedItem, _pendingSync: false };
-          if (newItem.tempId) delete newItem.tempId; // Clean up tempId from the object itself
-
-          // Add the new "real" item to the top
-          items.unshift(newItem);
+          // Check if this _id already exists (could happen from WebSocket race condition)
+          const existingIndex = items.findIndex(it => it._id === savedItem._id);
+          
+          if (existingIndex !== -1) {
+              // Update the existing one
+              items[existingIndex] = { ...items[existingIndex], ...savedItem, _pendingSync: false };
+              if (items[existingIndex].tempId) delete items[existingIndex].tempId;
+          } else {
+              // Ensure the new item is clean
+              const newItem = { ...savedItem, _pendingSync: false };
+              if (newItem.tempId) delete newItem.tempId;
+              
+              // Add the new "real" item to the top
+              items.unshift(newItem);
+          }
       }
       // SCENARIO 3: Offline Save (still has tempId, no _id)
       else {
